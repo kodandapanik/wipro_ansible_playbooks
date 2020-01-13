@@ -15,8 +15,8 @@
     - name: run_infra_script
       command: '{{infra_script_command}}'
       register: run_infra_script_logs
-    - debug: var=run_infra_script_logs.stdout_lines
+    - debug: var=run_infra_script_logs.stdout
     - name: infra_tool_log_tail
       command: '{{infra_tail_log_command}}'
       register: tail_log_command_logs
-    - debug: var=tail_log_command_logs.stdout_lines
+    - debug: var=tail_log_command_logs.stdout
