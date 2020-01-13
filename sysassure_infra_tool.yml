@@ -1,0 +1,22 @@
+---
+
+- hosts: all
+  gather_facts: true
+  tasks:
+    - name: copy_terraform_packer_files
+      copy:
+        src: "{{ item.src }}"
+        dest: "{{ item.dest }}"
+      with_items:
+        - { src: '{{packer_src_file}}',dest: '{{packer_dest}}'}
+        - { src: '{{terraform_src_file}}',dest: '{{terraform_dest}}'}
+    - name: check_files
+      command: '{{infra_list_command}}'
+    - name: run_infra_script
+      command: '{{infra_script_command}}'
+      register: run_infra_script_logs
+    - debug: var=run_infra_script_logs.stdout_lines
+    - name: infra_tool_log_tail
+      command: '{{infra_tail_log_command}}'
+      register: tail_log_command_logs
+    - debug: var=tail_log_command_logs.stdout_lines

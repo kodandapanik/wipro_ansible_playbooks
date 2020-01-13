@@ -1,0 +1,44 @@
+---
+
+- hosts: all
+  gather_facts: true
+  vars:
+    is_infra_destroy: '{{is_infra_destroy}}'
+  tasks:
+    - name: copy_hosts_files
+      copy:
+        src: '{{hosts_src}}/{{item}}'
+        dest: '{{hosts_dest}}'
+      with_items: '{{hosts_src_files}}'
+      when: hosts_src_files is defined and hosts_src_files is not none
+    - name: copy_config_files
+      copy:
+        src: '{{config_src}}/{{item}}'
+        dest: '{{config_dest}}'
+      with_items: '{{config_src_files}}'
+    - name: copy_data_files
+      copy:
+        src: '{{data_src}}/{{item}}'
+        dest: '{{data_dest}}'
+      with_items: '{{data_src_files}}'
+    - name: copy_testcases_files
+      copy:
+        src: '{{testcases_src}}/{{item}}'
+        dest: '{{testcases_dest}}'
+      with_items: '{{testcases_src_files}}' 
+    - name: check_files
+      command: '{{test_list_command}}'
+    - name: run_test_script
+      command: '{{test_script_command}}'
+      register: run_test_script_log
+    - debug: var=run_test_script_log.stdout_lines
+    - name: test_tool_log_tail
+      command: '{{test_tail_log_command}}'
+      register: tail_log_command_logs
+    - debug: var=tail_log_command_logs.stdout_lines
+    - name: run_destroy_infra_script
+      command: '{{destroy_script_command}}'
+      register: destroy_script_log
+      when: is_infra_destroy == "yes"
+    - debug: var=destroy_script_log.stdout_lines
+      when: is_infra_destroy == "yes"
